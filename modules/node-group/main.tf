@@ -33,7 +33,7 @@ resource "cloudscale_server" "node" {
   user_data = <<-EOF
     {
       "ignition": {
-        "version": "2.2.0",
+        "version": "3.1.0",
         "config": {
           "append": [{
             "source": "https://${var.api_int}:22623/config/${var.ignition_config}"
