@@ -17,7 +17,7 @@ resource "cloudscale_server" "bootstrap" {
         "ignition": {
             "version": "3.1.0",
             "config": {
-                "append": [
+                "merge": [
                     {
                         "source": "${var.ignition_bootstrap}"
                     }
