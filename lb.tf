@@ -33,6 +33,11 @@ resource "cloudscale_server" "lb" {
     no_address   = true
   }
   lifecycle {
+    ignore_changes = [
+      skip_waiting_for_ssh_host_keys,
+      image_slug,
+      user_data,
+    ]
     create_before_destroy = true
   }
   user_data = <<-EOF
