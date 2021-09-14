@@ -34,6 +34,6 @@ resource "cloudscale_server" "bootstrap" {
     }
     EOF
   depends_on = [
-    cloudscale_server.lb,
+    module.lb.servers,
   ]
 }
