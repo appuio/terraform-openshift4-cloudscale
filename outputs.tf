@@ -6,8 +6,8 @@ output "dns_entries" {
     "internal_vip"     = cidrhost(var.privnet_cidr, 100),
     "masters"          = module.master.ip_addresses,
     "cluster_id"       = var.cluster_id,
-    "lbs"              = module.lb.servers[*].public_ipv4_address,
-    "lb_hostnames"     = module.lb.server_names[*].hex
+    "lbs"              = module.lb.public_ipv4_addresses,
+    "lb_hostnames"     = module.lb.server_names
   })
 }
 
