@@ -1,6 +1,6 @@
-variable "ip_addresses" {
+variable "router_ip_addresses" {
   type        = list(string)
-  description = "Private IPV4 addresses of all nodes"
+  description = "Private IPV4 addresses of nodes running ingress routers"
 }
 
 variable "bootstrap_node" {
@@ -19,29 +19,14 @@ variable "cluster_id" {
   description = "ID of the cluster"
 }
 
-variable "region" {
-  type        = string
-  description = "Region where to deploy nodes"
-}
-
-variable "ssh_keys" {
-  type        = list(string)
-  description = "SSH keys to add to LBs"
-  default     = []
-}
-
-variable "privnet_id" {
-  description = "UUID of the private net to use"
-}
-
 variable "privnet_cidr" {
   default     = "172.18.200.0/24"
   description = "CIDR of the private net to use"
 }
 
-variable "lb_count" {
-  type    = number
-  default = 2
+variable "lb_names" {
+  description = "The hostnames of the loadbalancers"
+  type        = list(string)
 }
 
 variable "lb_cloudscale_api_secret" {
@@ -52,6 +37,14 @@ variable "hieradata_repo_user" {
   type = string
 }
 
-variable "control_vshn_net_token" {
+variable "api_vip_network" {
+  type = string
+}
+
+variable "nat_vip_network" {
+  type = string
+}
+
+variable "router_vip_network" {
   type = string
 }
