@@ -1,5 +1,5 @@
 module "hiera" {
-  source = "./modules/hiera"
+  source = "git::https://github.com/appuio/terraform-modules.git//modules/lb-vshn-hiera?ref=skeleton-and-lb"
 
   router_ip_addresses      = module.infra.ip_addresses[*]
   bootstrap_node           = var.bootstrap_count > 0 ? cidrhost(var.privnet_cidr, 10) : ""
