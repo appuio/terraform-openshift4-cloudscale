@@ -36,5 +36,5 @@ output "api_int" {
 }
 
 output "hieradata_mr" {
-  value = module.hiera.hieradata_mr_url
+  value = module.lb.hieradata_mr_url
 }
