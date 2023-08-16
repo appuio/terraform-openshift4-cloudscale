@@ -16,7 +16,6 @@ output "dns_entries" {
     "cluster_id"          = var.cluster_id,
     "lbs"                 = module.lb.public_ipv4_addresses,
     "lb_hostnames"        = module.lb.server_names
-    "node_name_suffix"    = local.node_name_suffix,
   })
 }
 

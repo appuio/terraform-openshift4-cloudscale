@@ -86,13 +86,13 @@ module "lb_api_int" {
 module "lb_ingress" {
   source = "./modules/cloudscale-lb"
 
-  role         = "ingress"
-  cluster_id   = var.cluster_id
-  region       = var.region
-  protocol     = var.lb_enable_proxy_protocol ? "proxyv2" : "tcp"
-  subnet_uuid  = local.subnet_uuid
-  members      = module.infra.ip_addresses[*]
-  ports        = [80, 443]
+  role        = "ingress"
+  cluster_id  = var.cluster_id
+  region      = var.region
+  protocol    = var.lb_enable_proxy_protocol ? "proxyv2" : "tcp"
+  subnet_uuid = local.subnet_uuid
+  members     = module.infra.ip_addresses[*]
+  ports       = [80, 443]
 
   health_check = {
     type = "http"
