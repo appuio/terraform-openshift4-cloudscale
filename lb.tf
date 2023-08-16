@@ -79,6 +79,7 @@ module "lb_api_int" {
     type = "https"
     path = "/readyz"
     host = "api.${var.cluster_id}.${var.base_domain}"
+    port = 6443
   }
 }
 
