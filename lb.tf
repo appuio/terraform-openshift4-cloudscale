@@ -75,16 +75,22 @@ resource "cloudscale_floating_ip" "api_v4" {
   reverse_ptr   = "api.${local.node_name_suffix}"
 }
 
+resource "cloudscale_floating_ip" "api_v6" {
+  load_balancer = module.lb_api.lb_id
+  ip_version    = 6
+  reverse_ptr   = "api.${local.node_name_suffix}"
+}
+
 module "lb_api_int" {
   source = "./modules/cloudscale-lb"
 
-  role         = "api-int"
-  cluster_id   = var.cluster_id
-  region       = var.region
-  protocol     = "tcp"
-  subnet_uuid  = local.subnet_uuid
-  members      = module.master.ip_addresses[*]
-  ports        = [6443, 22623]
+  role        = "api-int"
+  cluster_id  = var.cluster_id
+  region      = var.region
+  protocol    = "tcp"
+  subnet_uuid = local.subnet_uuid
+  members     = module.master.ip_addresses[*]
+  ports       = [6443, 22623]
   internal_vip = cidrhost(var.privnet_cidr, 100)
 
   health_check = {
