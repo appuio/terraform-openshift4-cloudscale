@@ -66,13 +66,14 @@ module "lb_api" {
 module "lb_api_int" {
   source = "./modules/cloudscale-lb"
 
-  role         = "api-int"
-  cluster_id   = var.cluster_id
-  region       = var.region
-  protocol     = "tcp"
-  subnet_uuid  = local.subnet_uuid
-  members      = module.master.ip_addresses[*]
-  ports        = [6443, 22623]
+  role        = "api-int"
+  cluster_id  = var.cluster_id
+  region      = var.region
+  protocol    = "tcp"
+  subnet_uuid = local.subnet_uuid
+  members     = module.master.ip_addresses[*]
+  ports       = [6443, 22623]
+  // TODO(sg): Switch to .100 for api-int
   internal_vip = cidrhost(var.privnet_cidr, 99)
 
   health_check = {
