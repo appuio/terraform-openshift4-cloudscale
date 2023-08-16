@@ -66,13 +66,14 @@ module "lb_api" {
 module "lb_api_int" {
   source = "./modules/cloudscale-lb"
 
-  role        = "api-int"
-  cluster_id  = var.cluster_id
-  region      = var.region
-  protocol    = "tcp"
-  subnet_uuid = local.subnet_uuid
-  members     = module.master.ip_addresses[*]
-  ports       = [6443, 22623]
+  role         = "api-int"
+  cluster_id   = var.cluster_id
+  region       = var.region
+  protocol     = "tcp"
+  subnet_uuid  = local.subnet_uuid
+  members      = module.master.ip_addresses[*]
+  ports        = [6443, 22623]
+  internal_vip = cidrhost(var.privnet_cidr, 99)
 
   health_check = {
     type = "https"
@@ -81,40 +82,21 @@ module "lb_api_int" {
   }
 }
 
-/*
-resource "cloudscale_load_balancer" "api" {
-  name        = "${var.cluster_id}_api"
-  flavor_slug = "lb-standard"
-  zone_slug   = "${var.region}1"
-}
+module "lb_ingress" {
+  source = "./modules/cloudscale-lb"
 
-resource "cloudscale_load_balancer_pool" "api" {
-  name               = "${var.cluster_id}_api"
-  algorithm          = "round_robin"
-  protocol           = "tcp"
-  load_balancer_uuid = cloudscale_load_balancer.api.id
-}
+  role         = "ingress"
+  cluster_id   = var.cluster_id
+  region       = var.region
+  protocol     = var.lb_enable_proxy_protocol ? "proxyv2" : "tcp"
+  subnet_uuid  = local.subnet_uuid
+  members      = module.infra.ip_addresses[*]
+  ports        = [80, 443]
 
-resource "cloudscale_load_balancer_pool_member" "api" {
-  count         = length(module.master.ip_addresses)
-  name          = "${var.cluster_id}_api-member-${count.index}"
-  pool_uuid     = cloudscale_load_balancer_pool.api.id
-  protocol_port = 6443
-  address       = module.master.ip_addresses[count.index]
-  subnet_uuid   = local.subnet_uuid
+  health_check = {
+    type = "http"
+    path = "/healthz/ready"
+    host = "ingress.${var.cluster_id}.${var.base_domain}"
+    port = 1936
+  }
 }
-
-resource "cloudscale_load_balancer_listener" "api_k8s" {
-  name          = "${var.cluster_id}_api-k8s"
-  pool_uuid     = cloudscale_load_balancer_pool.api.id
-  protocol      = "tcp"
-  protocol_port = 6443
-}
-
-resource "cloudscale_load_balancer_health_monitor" "api" {
-  pool_uuid     = cloudscale_load_balancer_pool.api.id
-  type          = "https"
-  http_url_path = "/readyz"
-  http_host     = "api.${var.cluster_id}.${var.base_domain}"
-}
-*/
