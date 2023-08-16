@@ -12,7 +12,7 @@ module "lb" {
   team                   = var.team
   additional_networks    = var.additional_lb_networks
   use_existing_vips      = var.use_existing_vips
-  enable_api_vip         = var.enable_api_vip
+  enable_api_vip         = false
   enable_router_vip      = !var.allocate_router_vip_for_lb_controller && var.enable_router_vip
   enable_nat_vip         = var.enable_nat_vip
 
