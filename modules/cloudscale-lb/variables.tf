@@ -22,8 +22,8 @@ variable "members" {
   type = list(string)
 }
 
-variable "port" {
-  type = number
+variable "ports" {
+  type = list(number)
 }
 
 variable "health_check" {
