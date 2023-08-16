@@ -1,7 +1,23 @@
+locals {
+  backend_count = length(var.members)
+  port_count    = length(var.ports)
+  internal_vips = var.internal_vip != "" ? [
+    var.internal_vip
+  ] : []
+
+}
 resource "cloudscale_load_balancer" "lb" {
   name        = "${var.cluster_id}_${var.role}"
   flavor_slug = "lb-standard"
   zone_slug   = "${var.region}1"
+
+  dynamic "vip_addresses" {
+    for_each = local.internal_vips
+    content {
+      subnet_uuid = var.subnet_uuid
+      address     = vip_addresses.value
+    }
+  }
 }
 
 resource "cloudscale_load_balancer_pool" "lb" {
@@ -12,17 +28,17 @@ resource "cloudscale_load_balancer_pool" "lb" {
 }
 
 resource "cloudscale_load_balancer_pool_member" "lb" {
-  count         = length(var.members)*length(var.ports)
+  count         = local.backend_count * local.port_count
   name          = "${var.cluster_id}_api-member-${count.index}"
   pool_uuid     = cloudscale_load_balancer_pool.lb.id
-  protocol_port = var.ports[count.index%var.ports]
-  address       = var.members[count.index/var.ports]
+  protocol_port = var.ports[floor(count.index%local.port_count)]
+  address       = var.members[floor(count.index/local.port_count)]
   subnet_uuid   = var.subnet_uuid
   monitor_port  = var.health_check.port
 }
 
 resource "cloudscale_load_balancer_listener" "lb" {
-  count         = len(var.ports)
+  count         = local.port_count
   name          = "${var.cluster_id}_${var.role}_${var.ports[count.index]}"
   pool_uuid     = cloudscale_load_balancer_pool.lb.id
   protocol      = var.protocol
