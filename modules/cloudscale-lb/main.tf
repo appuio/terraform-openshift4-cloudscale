@@ -31,9 +31,9 @@ resource "cloudscale_load_balancer_pool" "lb" {
 resource "cloudscale_load_balancer_pool_member" "lb" {
   count         = local.backend_count * local.port_count
   name          = "${var.cluster_id}_${var.role}-member_${count.index}"
-  pool_uuid     = cloudscale_load_balancer_pool.lb[count.index%local.port_count].id
-  protocol_port = var.ports[floor(count.index%local.port_count)]
-  address       = var.members[floor(count.index/local.port_count)]
+  pool_uuid     = cloudscale_load_balancer_pool.lb[count.index % local.port_count].id
+  protocol_port = var.ports[floor(count.index % local.port_count)]
+  address       = var.members[floor(count.index / local.port_count)]
   subnet_uuid   = var.subnet_uuid
   monitor_port  = var.health_check.port
 }
