@@ -22,12 +22,33 @@ module "lb" {
 
 module "lb_api" {
   source = "./modules/cloudscale-lb"
-  cluster_id = var.cluster_id
-  region = var.region
-  protocol = "tcp"
+
+  role        = "api"
+  cluster_id  = var.cluster_id
+  region      = var.region
+  protocol    = "tcp"
   subnet_uuid = local.subnet_uuid
-  members = module.master.ip_addresses[*]
-  port = 6443
+  members     = module.master.ip_addresses[*]
+  ports       = [6443]
+
+  health_check = {
+    type = "https"
+    path = "/readyz"
+    host = "api.${var.cluster_id}.${var.base_domain}"
+  }
+}
+
+module "lb_api_int" {
+  source = "./modules/cloudscale-lb"
+
+  role        = "api-int"
+  cluster_id  = var.cluster_id
+  region      = var.region
+  protocol    = "tcp"
+  subnet_uuid = local.subnet_uuid
+  members     = module.master.ip_addresses[*]
+  ports       = [6443, 22623]
+
   health_check = {
     type = "https"
     path = "/readyz"
