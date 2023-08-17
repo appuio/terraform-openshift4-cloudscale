@@ -35,7 +35,7 @@ module "lb_api" {
   health_check = {
     type = "https"
     path = "/readyz"
-    host = "api.${var.cluster_id}.${var.base_domain}"
+    host = "api.${local.node_name_suffix}"
   }
 }
 
@@ -55,7 +55,7 @@ module "lb_api_int" {
   health_check = {
     type = "https"
     path = "/readyz"
-    host = "api.${var.cluster_id}.${var.base_domain}"
+    host = "api.${local.node_name_suffix}"
     port = 6443
   }
 }
@@ -74,7 +74,7 @@ module "lb_ingress" {
   health_check = {
     type = "http"
     path = "/healthz/ready"
-    host = "ingress.${var.cluster_id}.${var.base_domain}"
+    host = "ingress.${local.node_name_suffix}"
     port = 1936
   }
 }
