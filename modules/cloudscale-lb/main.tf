@@ -44,6 +44,7 @@ resource "cloudscale_load_balancer_listener" "lb" {
   pool_uuid     = cloudscale_load_balancer_pool.lb[count.index].id
   protocol      = "tcp"
   protocol_port = var.ports[count.index]
+  allowed_cidrs = lookup(var.allowed_cidrs, var.ports[count.index], [])
 }
 
 resource "cloudscale_load_balancer_health_monitor" "lb" {

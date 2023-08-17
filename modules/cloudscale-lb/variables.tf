@@ -34,3 +34,8 @@ variable "internal_vip" {
   type    = string
   default = ""
 }
+
+variable "allowed_cidrs" {
+  type    = map(list(string))
+  default = {}
+}
