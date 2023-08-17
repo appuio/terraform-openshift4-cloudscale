@@ -91,6 +91,9 @@ module "lb_api_int" {
   subnet_uuid = local.subnet_uuid
   members     = module.master.ip_addresses[*]
   ports       = [6443, 22623]
+  allowed_cidrs = {
+    22623 = [local.privnet_cidr]
+  }
   internal_vip = cidrhost(var.privnet_cidr, 100)
 
   health_check = {
