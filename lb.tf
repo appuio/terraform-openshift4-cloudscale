@@ -63,6 +63,18 @@ module "lb_api" {
   }
 }
 
+resource "cloudscale_floating_ip" "api_v4" {
+  load_balancer = module.lb_api.lb_id
+  ip_version    = 4
+  reverse_ptr   = "api.${local.node_name_suffix}"
+}
+
+resource "cloudscale_floating_ip" "api_v6" {
+  load_balancer = module.lb_api.lb_id
+  ip_version    = 6
+  reverse_ptr   = "api.${local.node_name_suffix}"
+}
+
 module "lb_api_int" {
   source = "./modules/cloudscale-lb"
 
@@ -104,4 +116,16 @@ module "lb_ingress" {
     host = "ingress.${local.node_name_suffix}"
     port = 1936
   }
+}
+
+resource "cloudscale_floating_ip" "ingress_v4" {
+  load_balancer = module.lb_ingress.lb_id
+  ip_version    = 4
+  reverse_ptr   = "ingress.${local.node_name_suffix}"
+}
+
+resource "cloudscale_floating_ip" "ingress_v6" {
+  load_balancer = module.lb_ingress.lb_id
+  ip_version    = 6
+  reverse_ptr   = "ingress.${local.node_name_suffix}"
 }

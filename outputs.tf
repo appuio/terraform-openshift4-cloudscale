@@ -10,8 +10,8 @@ locals {
 output "dns_entries" {
   value = templatefile("${path.module}/templates/dns.zone", {
     "node_name_suffix"    = local.node_name_suffix,
-    "api_vip"             = module.lb_api.vip_v4[0]
-    "api_vip_v6"          = module.lb_api.vip_v6[0]
+    "api_vip"             = cloudscale_floating_ip.api_v4.id
+    "api_vip_v6"          = cloudscale_floating_ip.api_v6.id
     "router_vip"          = local.router_vip
     "router_vip_v6"       = local.router_vip_v6
     "egress_vip"          = var.enable_nat_vip && var.lb_count != 0 ? split("/", module.lb.nat_vip[0].network)[0] : ""
