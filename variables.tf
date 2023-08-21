@@ -59,7 +59,7 @@ variable "lb_count" {
 
 variable "lb_flavor" {
   type        = string
-  default     = "plus-8-2"
+  default     = "flex-4-1"
   description = "Compute flavor to use for loadbalancers"
 }
 
