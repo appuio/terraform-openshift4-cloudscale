@@ -66,8 +66,7 @@ module "lb_api_int" {
   allowed_cidrs = {
     22623 = [local.privnet_cidr]
   }
-  // TODO(sg): Switch to .100 for api-int
-  internal_vip = cidrhost(var.privnet_cidr, 99)
+  internal_vip = cidrhost(var.privnet_cidr, 100)
 
   health_check = {
     type = "https"
