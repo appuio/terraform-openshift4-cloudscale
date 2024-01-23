@@ -33,7 +33,4 @@ resource "cloudscale_server" "bootstrap" {
         }
     }
     EOF
-  depends_on = [
-    module.lb.public_ipv4_addresses,
-  ]
 }
