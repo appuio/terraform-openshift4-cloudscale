@@ -52,17 +52,6 @@ variable "bootstrap_count" {
   default = 0
 }
 
-variable "lb_count" {
-  type    = number
-  default = 2
-}
-
-variable "lb_flavor" {
-  type        = string
-  default     = "flex-4-1"
-  description = "Compute flavor to use for loadbalancers"
-}
-
 variable "lbaas_flavor" {
   type        = string
   default     = "lb-standard"
@@ -144,26 +133,6 @@ variable "image_slug" {
   type        = string
   description = "Image to use for nodes"
   default     = "custom:rhcos-4.9"
-}
-
-variable "lb_cloudscale_api_secret" {
-  type = string
-}
-
-variable "control_vshn_net_token" {
-  type = string
-}
-
-variable "team" {
-  type        = string
-  description = "Team to assign the load balancers to in Icinga. All lower case."
-  default     = ""
-}
-
-variable "additional_lb_networks" {
-  type        = list(string)
-  description = "List of UUIDs of additional cloudscale.ch networks to attach"
-  default     = []
 }
 
 variable "lb_enable_proxy_protocol" {
