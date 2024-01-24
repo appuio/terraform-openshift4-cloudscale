@@ -8,7 +8,7 @@ locals {
 }
 resource "cloudscale_load_balancer" "lb" {
   name        = "${var.cluster_id}_${var.role}"
-  flavor_slug = "lb-standard"
+  flavor_slug = var.lb_flavor
   zone_slug   = "${var.region}1"
 
   dynamic "vip_addresses" {
