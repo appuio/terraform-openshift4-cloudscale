@@ -4,7 +4,7 @@ resource "cloudscale_server" "bootstrap" {
   zone_slug      = "${var.region}1"
   flavor_slug    = "flex-16-4"
   image_slug     = var.image_slug
-  volume_size_gb = 128
+  volume_size_gb = 100
   interfaces {
     type = "private"
     addresses {
