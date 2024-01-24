@@ -63,6 +63,12 @@ variable "lb_flavor" {
   description = "Compute flavor to use for loadbalancers"
 }
 
+variable "lbaas_flavor" {
+  type        = string
+  default     = "lb-standard"
+  description = "Flavor to use for cloudscale.ch LBaaS instances"
+}
+
 variable "master_count" {
   type    = number
   default = 3

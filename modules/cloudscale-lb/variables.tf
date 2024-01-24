@@ -2,6 +2,11 @@ variable "cluster_id" {
   type = string
 }
 
+variable "lb_flavor" {
+  type    = string
+  default = "lb-standard"
+}
+
 variable "role" {
   type = string
 }
