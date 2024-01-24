@@ -56,6 +56,7 @@ module "lb_api" {
 
   role         = "api"
   cluster_id   = var.cluster_id
+  lb_flavor    = var.lbaas_flavor
   region       = var.region
   protocol     = "tcp"
   subnet_uuid  = local.subnet_uuid
@@ -87,6 +88,7 @@ module "lb_api_int" {
 
   role         = "api-int"
   cluster_id   = var.cluster_id
+  lb_flavor    = var.lbaas_flavor
   region       = var.region
   protocol     = "tcp"
   subnet_uuid  = local.subnet_uuid
