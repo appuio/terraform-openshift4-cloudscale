@@ -22,6 +22,11 @@ variable "members" {
   type = list(string)
 }
 
+variable "bootstrap_ip" {
+  type    = string
+  default = ""
+}
+
 variable "ports" {
   type = list(number)
 }
