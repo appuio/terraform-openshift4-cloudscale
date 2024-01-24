@@ -2,8 +2,10 @@
 $ORIGIN ${node_name_suffix}.
 
 api       IN A     ${api_vip}
+api       IN AAAA  ${api_vip_v6}
 api-int   IN A     ${internal_vip}
 ingress   IN A     ${router_vip}
+ingress   IN AAAA  ${router_vip_v6}
 egress    IN A     ${egress_vip}
 
 *.apps    IN CNAME ingress.${node_name_suffix}.
