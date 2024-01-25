@@ -39,6 +39,22 @@ locals {
             TTYPath=/dev/ttyS0
             ExecStart=/bin/sh -c "echo '-----BEGIN SSH HOST KEY KEYS-----'; cat /etc/ssh/ssh_host_*key.pub; echo '-----END SSH HOST KEY KEYS-----'"
             EOC
+          },
+          {
+            "name": "kubelet.service",
+            "dropins": [
+              {
+                "name": "appuio-provider-id.conf",
+                "contents": <<-EOC
+                # Managed through terraform-openshift4-cloudscale
+                [Service]
+                ExecStartPre=/bin/bash -c \
+                  'echo "KUBELET_PROVIDERID=\"cloudscale://$(curl http://169.254.169.254/openstack/2017-02-22/meta_data.json | \
+                    jq -r .meta.cloudscale_uuid)\"" > /run/appuio-provider-id.env'
+                EnvironmentFile=-/run/appuio-provider-id.env
+                EOC
+              }
+            ]
           }
         ]
       },
