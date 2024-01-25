@@ -1,6 +1,60 @@
 locals {
   anti_affinity_capacity    = 4
   anti_affinity_group_count = ceil(var.node_count / local.anti_affinity_capacity)
+
+  user_data = [
+    for hostname in random_id.node[*].hex :
+    {
+      "ignition" : {
+        "version" : "3.2.0",
+        "config" : {
+          "merge" : [{
+            "source" : "https://${var.api_int}:22623/config/${var.ignition_config}"
+          }]
+        },
+        "security" : {
+          "tls" : {
+            "certificateAuthorities" : [{
+              "source" : "data:text/plain;charset=utf-8;base64,${base64encode(var.ignition_ca)}"
+            }]
+          }
+        }
+      },
+      "systemd" : {
+        "units" : [
+          {
+            "name" : "cloudscale-hostkeys.service",
+            "enabled" : true,
+            "contents" : <<-EOC
+            [Unit]
+            Description=Print SSH Public Keys to tty
+            After=sshd-keygen.target
+
+            [Install]
+            WantedBy=multi-user.target
+
+            [Service]
+            Type=oneshot
+            StandardOutput=tty
+            TTYPath=/dev/ttyS0
+            ExecStart=/bin/sh -c "echo '-----BEGIN SSH HOST KEY KEYS-----'; cat /etc/ssh/ssh_host_*key.pub; echo '-----END SSH HOST KEY KEYS-----'"
+            EOC
+          }
+        ]
+      },
+      "storage": {
+        "files": [
+          {
+            "path": "/etc/hostname",
+            "mode": 420,
+            "contents": {
+              "source": "data:,${hostname}"
+            }
+          }
+        ]
+      }
+    }
+  ]
 }
 
 resource "random_id" "node" {
@@ -30,42 +84,7 @@ resource "cloudscale_server" "node" {
       subnet_uuid = var.subnet_uuid
     }
   }
-  user_data = <<-EOF
-    {
-      "ignition": {
-        "version": "3.1.0",
-        "config": {
-          "merge": [{
-            "source": "https://${var.api_int}:22623/config/${var.ignition_config}"
-          }]
-        },
-        "security": {
-          "tls": {
-            "certificateAuthorities": [{
-              "source": "data:text/plain;charset=utf-8;base64,${base64encode(var.ignition_ca)}"
-            }]
-          }
-        }
-      },
-      "systemd": {
-        "units": [{
-          "name": "cloudscale-hostkeys.service",
-          "enabled": true,
-          "contents": "[Unit]\nDescription=Print SSH Public Keys to tty\nAfter=sshd-keygen.target\n\n[Install]\nWantedBy=multi-user.target\n\n[Service]\nType=oneshot\nStandardOutput=tty\nTTYPath=/dev/ttyS0\nExecStart=/bin/sh -c \"echo '-----BEGIN SSH HOST KEY KEYS-----'; cat /etc/ssh/ssh_host_*key.pub; echo '-----END SSH HOST KEY KEYS-----'\""
-          }]
-      },
-      "storage": {
-        "files": [{
-          "filesystem": "root",
-          "path": "/etc/hostname",
-          "mode": 420,
-          "contents": {
-              "source": "data:,${random_id.node[count.index].hex}"
-          }
-        }]
-      }
-    }
-    EOF
+  user_data = jsonencode(local.user_data[count.index])
 
   lifecycle {
     ignore_changes = [
