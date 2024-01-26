@@ -19,7 +19,3 @@ ingress-int IN A     ${internal_router_vip}
 %{ endif ~}
 
 *.apps    IN CNAME ingress.${node_name_suffix}.
-
-%{ for i, addr in masters ~}
-etcd-${i} IN A     ${addr}
-%{ endfor ~}
