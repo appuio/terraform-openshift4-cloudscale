@@ -9,7 +9,3 @@ ingress   IN AAAA  ${router_vip_v6}
 ;egress    IN A     TODO insert cloudscale.ch managed gateway IP
 
 *.apps    IN CNAME ingress.${node_name_suffix}.
-
-%{ for i, addr in masters ~}
-etcd-${i} IN A     ${addr}
-%{ endfor ~}

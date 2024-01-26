@@ -6,7 +6,6 @@ output "dns_entries" {
     "router_vip"       = cloudscale_floating_ip.ingress_v4.id
     "router_vip_v6"    = cloudscale_floating_ip.ingress_v6.id
     "internal_vip"     = module.lb_api_int.vip_v4[0]
-    "masters"          = module.master.ip_addresses,
     "cluster_id"       = var.cluster_id
   })
 }
