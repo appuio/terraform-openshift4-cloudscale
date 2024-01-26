@@ -16,7 +16,6 @@ output "dns_entries" {
     "router_vip_v6"       = local.router_vip_v6
     "internal_vip"        = local.internal_vip,
     "internal_router_vip" = var.internal_router_vip,
-    "masters"             = module.master.ip_addresses,
     "cluster_id"          = var.cluster_id,
   })
 }
