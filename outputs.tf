@@ -1,8 +1,12 @@
+locals {
+  router_vip = var.allocate_router_vip_for_lb_controller ? split("/", cloudscale_floating_ip.router_vip[0].network)[0] : (var.enable_router_vip && var.lb_count != 0 ? split("/", module.lb.router_vip[0].network)[0] : "")
+}
+
 output "dns_entries" {
   value = templatefile("${path.module}/templates/dns.zone", {
     "node_name_suffix"    = local.node_name_suffix,
     "api_vip"             = var.enable_api_vip && var.lb_count != 0 ? split("/", module.lb.api_vip[0].network)[0] : ""
-    "router_vip"          = var.enable_router_vip && var.lb_count != 0 ? split("/", module.lb.router_vip[0].network)[0] : ""
+    "router_vip"          = local.router_vip
     "egress_vip"          = var.enable_nat_vip && var.lb_count != 0 ? split("/", module.lb.nat_vip[0].network)[0] : ""
     "internal_vip"        = local.internal_vip,
     "internal_router_vip" = var.internal_router_vip,
@@ -19,6 +23,10 @@ output "node_name_suffix" {
 
 output "subnet_uuid" {
   value = local.subnet_uuid
+}
+
+output "router_vip" {
+  value = local.router_vip
 }
 
 output "region" {
