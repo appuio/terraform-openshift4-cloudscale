@@ -43,7 +43,7 @@ resource "cloudscale_server" "node" {
         "version": "3.1.0",
         "config": {
           "merge": [{
-            "source": "https://${var.api_int}:22623/config/${var.ignition_config}"
+            "source": "https://${var.api_int}:443/config/${var.ignition_config}"
           }]
         },
         "security": {
