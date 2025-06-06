@@ -20,6 +20,11 @@ variable "ignition_ca" {
   description = "CA certificate of the ignition API"
 }
 
+variable "ignition_token" {
+  type        = string
+  description = "Token to fetch ignition config"
+}
+
 variable "base_domain" {
   type        = string
   description = "Base domain of the cluster"

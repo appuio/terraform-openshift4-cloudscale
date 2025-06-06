@@ -51,6 +51,12 @@ variable "ignition_config" {
   description = "Name of the ignition config to use for the nodes"
 }
 
+variable "ignition_token" {
+  type        = string
+  default     = "CHANGEME"
+  description = "Token to fetch ignition config"
+}
+
 variable "api_int" {
   type        = string
   description = "Hostname of the internal API (to be used for the ignition endpoint)"
