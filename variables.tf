@@ -182,15 +182,33 @@ variable "enable_api_vip" {
   default     = true
 }
 
+variable "lb_attach_api_vip" {
+  type        = bool
+  description = "Whether to attach the cloudscale floating IP to the load balancer for the API"
+  default     = true
+}
+
 variable "enable_router_vip" {
   type        = bool
   description = "Whether to configure a cloudscale floating IP for the router"
   default     = true
 }
 
+variable "lb_attach_router_vip" {
+  type        = bool
+  description = "Whether to attach the cloudscale floating IP to the load balancer for the router"
+  default     = true
+}
+
 variable "enable_nat_vip" {
   type        = bool
   description = "Whether to configure a cloudscale floating IP for the default gateway NAT"
+  default     = true
+}
+
+variable "lb_attach_nat_vip" {
+  type        = bool
+  description = "Whether to attach the cloudscale floating IP to the load balancer for the NAT"
   default     = true
 }
 
