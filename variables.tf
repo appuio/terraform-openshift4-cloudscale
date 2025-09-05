@@ -217,3 +217,9 @@ variable "make_master_adoptable_by_provider" {
   description = "Whether to make the master nodes adoptable by https://github.com/appuio/machine-api-provider-cloudscale"
   default     = false
 }
+
+variable "allocate_router_vip_for_lb_controller" {
+  type        = bool
+  description = "If set to `true`, the module will provision an LB VIP and won't configure the router VIP in the Puppet-managed LBs"
+  default     = false
+}

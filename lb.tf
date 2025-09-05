@@ -13,7 +13,7 @@ module "lb" {
   additional_networks    = var.additional_lb_networks
   use_existing_vips      = var.use_existing_vips
   enable_api_vip         = var.enable_api_vip
-  enable_router_vip      = var.enable_router_vip
+  enable_router_vip      = !var.allocate_router_vip_for_lb_controller && var.enable_router_vip
   enable_nat_vip         = var.enable_nat_vip
 
   router_backends          = var.infra_count > 0 ? module.infra.ip_addresses[*] : module.worker.ip_addresses[*]
@@ -23,4 +23,22 @@ module "lb" {
   internal_vip             = local.internal_vip
   internal_router_vip      = var.internal_router_vip
   enable_proxy_protocol    = var.lb_enable_proxy_protocol
+}
+
+resource "cloudscale_floating_ip" "router_vip" {
+  count       = var.allocate_router_vip_for_lb_controller ? 1 : 0
+  ip_version  = 4
+  region_slug = var.region
+  reverse_ptr = "ingress.${local.node_name_suffix}"
+
+  tags = {
+    appuio_io_vip_id = "${var.cluster_id}:ingress"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # Will be handled by the cloudscale-loadbalancer-controller
+      load_balancer,
+    ]
+  }
 }
