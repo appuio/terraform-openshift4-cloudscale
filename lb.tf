@@ -37,6 +37,8 @@ resource "cloudscale_floating_ip" "router_vip" {
 
   lifecycle {
     ignore_changes = [
+      # Ignore changes to server for migration
+      server,
       # Will be handled by the cloudscale-loadbalancer-controller
       load_balancer,
     ]
