@@ -21,12 +21,12 @@ module "lb" {
   lb_cloudscale_api_secret = var.lb_cloudscale_api_secret
   hieradata_repo_user      = var.hieradata_repo_user
   internal_vip             = local.internal_vip
-  internal_router_vip      = var.internal_router_vip
+  internal_router_vip      = !var.allocate_router_vip_for_lb_controller ? var.internal_router_vip : ""
   enable_proxy_protocol    = var.lb_enable_proxy_protocol
 }
 
 resource "cloudscale_floating_ip" "router_vip" {
-  count       = var.allocate_router_vip_for_lb_controller ? 1 : 0
+  count       = var.enable_router_vip && var.allocate_router_vip_for_lb_controller ? 1 : 0
   ip_version  = 4
   region_slug = var.region
   reverse_ptr = "ingress.${local.node_name_suffix}"
