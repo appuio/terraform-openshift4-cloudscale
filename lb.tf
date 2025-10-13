@@ -101,35 +101,3 @@ module "lb_api_int" {
     port = 6443
   }
 }
-
-module "lb_ingress" {
-  source = "./modules/cloudscale-lb"
-
-  role        = "ingress"
-  cluster_id  = var.cluster_id
-  lb_flavor   = var.lbaas_flavor
-  region      = var.region
-  protocol    = var.lb_enable_proxy_protocol ? "proxyv2" : "tcp"
-  subnet_uuid = local.subnet_uuid
-  members     = module.infra.ip_addresses[*]
-  ports       = [80, 443]
-
-  health_check = {
-    type = "http"
-    path = "/healthz/ready"
-    host = "ingress.${local.node_name_suffix}"
-    port = 1936
-  }
-}
-
-resource "cloudscale_floating_ip" "ingress_v4" {
-  load_balancer = module.lb_ingress.lb_id
-  ip_version    = 4
-  reverse_ptr   = "ingress.${local.node_name_suffix}"
-}
-
-resource "cloudscale_floating_ip" "ingress_v6" {
-  load_balancer = module.lb_ingress.lb_id
-  ip_version    = 6
-  reverse_ptr   = "ingress.${local.node_name_suffix}"
-}
