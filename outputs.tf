@@ -1,5 +1,5 @@
 locals {
-  cloudscale_router_vip = var.enable_router_vip ? (var.allocate_router_vip_for_lb_controller ? split("/", cloudscale_floating_ip.router_vip[0].network)[0] : split("/", module.lb.router_vip[0].network)[0]) : ""
+  cloudscale_router_vip = var.enable_router_vip && var.allocate_router_vip_for_lb_controller ? split("/", cloudscale_floating_ip.router_vip[0].network)[0] : ""
 
   router_vip = var.allocate_router_vip_for_lb_controller && !var.enable_router_vip ? var.internal_router_vip : local.cloudscale_router_vip
 
@@ -14,13 +14,9 @@ output "dns_entries" {
     "api_vip_v6"          = cloudscale_floating_ip.api_v6.id
     "router_vip"          = local.router_vip
     "router_vip_v6"       = local.router_vip_v6
-    "egress_vip"          = var.enable_nat_vip && var.lb_count != 0 ? split("/", module.lb.nat_vip[0].network)[0] : ""
     "internal_vip"        = local.internal_vip,
     "internal_router_vip" = var.internal_router_vip,
-    "masters"             = module.master.ip_addresses,
     "cluster_id"          = var.cluster_id,
-    "lbs"                 = module.lb.public_ipv4_addresses,
-    "lb_hostnames"        = module.lb.server_names
   })
 }
 
@@ -50,10 +46,6 @@ output "ignition_ca" {
 
 output "api_int" {
   value = "api-int.${local.node_name_suffix}"
-}
-
-output "hieradata_mr" {
-  value = module.lb.hieradata_mr_url
 }
 
 output "master-machines_yml" {
