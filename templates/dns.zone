@@ -4,9 +4,15 @@ $ORIGIN ${node_name_suffix}.
 %{ if api_vip != "" ~}
 api         IN A     ${api_vip}
 %{ endif ~}
+%{ if api_vip_v6 != "" ~}
+api         IN AAAA  ${api_vip_v6}
+%{ endif ~}
 api-int     IN A     ${internal_vip}
 %{ if router_vip != "" ~}
 ingress     IN A     ${router_vip}
+%{ endif ~}
+%{ if router_vip_v6 != "" ~}
+ingress     IN AAAA  ${router_vip_v6}
 %{ endif ~}
 %{ if internal_router_vip != "" ~}
 ingress-int IN A     ${internal_router_vip}
