@@ -26,7 +26,7 @@ module "lb" {
 }
 
 resource "cloudscale_floating_ip" "router_vip" {
-  count       = var.enable_router_vip && var.allocate_router_vip_for_lb_controller ? 1 : 0
+  count       = var.enable_router_vip && var.allocate_router_vip_for_lb_controller && !var.use_existing_vips ? 1 : 0
   ip_version  = 4
   region_slug = var.region
   reverse_ptr = "ingress.${local.node_name_suffix}"
@@ -43,4 +43,10 @@ resource "cloudscale_floating_ip" "router_vip" {
       load_balancer,
     ]
   }
+}
+
+data "cloudscale_floating_ip" "router_vip" {
+  count       = var.enable_router_vip && var.allocate_router_vip_for_lb_controller && var.use_existing_vips ? 1 : 0
+  ip_version  = 4
+  reverse_ptr = "ingress.${local.node_name_suffix}"
 }
