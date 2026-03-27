@@ -28,6 +28,14 @@ output "subnet_uuid" {
   value = local.subnet_uuid
 }
 
+output "api_vip" {
+  value = cloudscale_floating_ip.api_v4.id
+}
+
+output "api_int_vip" {
+  value = local.internal_vip
+}
+
 output "router_vip" {
   value = local.router_vip
 }
