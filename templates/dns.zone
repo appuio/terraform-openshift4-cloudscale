@@ -17,16 +17,5 @@ ingress     IN AAAA  ${router_vip_v6}
 %{ if internal_router_vip != "" ~}
 ingress-int IN A     ${internal_router_vip}
 %{ endif ~}
-%{ if egress_vip != "" ~}
-egress      IN A     ${egress_vip}
-%{ endif ~}
 
 *.apps    IN CNAME ingress.${node_name_suffix}.
-
-%{ for i, addr in lbs ~}
-${lb_hostnames[i]} IN A     ${addr}
-%{ endfor ~}
-
-%{ for i, addr in masters ~}
-etcd-${i} IN A     ${addr}
-%{ endfor ~}
