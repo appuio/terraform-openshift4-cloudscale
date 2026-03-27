@@ -63,10 +63,16 @@ variable "lb_flavor" {
   description = "Compute flavor to use for loadbalancers"
 }
 
+variable "enable_api_lbaas" {
+  type        = bool
+  default     = false
+  description = "Whether to deploy cloudscale LBaaS instances for the API"
+}
+
 variable "lbaas_flavor" {
   type        = string
   default     = "lb-standard"
-  description = "Flavor to use for cloudscale.ch LBaaS instances"
+  description = "Flavor to use for cloudscale LBaaS instances"
 }
 
 variable "master_count" {
