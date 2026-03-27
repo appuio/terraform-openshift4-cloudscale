@@ -12,7 +12,7 @@ module "lb" {
   team                   = var.team
   additional_networks    = var.additional_lb_networks
   use_existing_vips      = var.use_existing_vips
-  enable_api_vip         = false
+  enable_api_vip         = !var.enable_api_lbaas
   enable_router_vip      = !var.allocate_router_vip_for_lb_controller && var.enable_router_vip
   enable_nat_vip         = var.enable_nat_vip
 
@@ -20,7 +20,7 @@ module "lb" {
   bootstrap_node           = var.bootstrap_count > 0 ? cidrhost(local.privnet_cidr, 10) : ""
   lb_cloudscale_api_secret = var.lb_cloudscale_api_secret
   hieradata_repo_user      = var.hieradata_repo_user
-  internal_vip             = local.internal_vip
+  internal_vip             = var.enable_api_lbaas ? "" : local.internal_vip
   internal_router_vip      = !var.allocate_router_vip_for_lb_controller ? var.internal_router_vip : ""
   enable_proxy_protocol    = var.lb_enable_proxy_protocol
 }
@@ -53,6 +53,7 @@ data "cloudscale_floating_ip" "router_vip" {
 
 module "lb_api" {
   source = "./modules/cloudscale-lb"
+  create = var.enable_api_lbaas
 
   role         = "api"
   cluster_id   = var.cluster_id
@@ -72,6 +73,7 @@ module "lb_api" {
 }
 
 resource "cloudscale_floating_ip" "api_v4" {
+  count         = var.enable_api_lbaas ? 1 : 0
   load_balancer = module.lb_api.lb_id
   region_slug   = var.region
   ip_version    = 4
@@ -79,6 +81,7 @@ resource "cloudscale_floating_ip" "api_v4" {
 }
 
 resource "cloudscale_floating_ip" "api_v6" {
+  count         = var.enable_api_lbaas ? 1 : 0
   load_balancer = module.lb_api.lb_id
   region_slug   = var.region
   ip_version    = 6
@@ -87,6 +90,7 @@ resource "cloudscale_floating_ip" "api_v6" {
 
 module "lb_api_int" {
   source = "./modules/cloudscale-lb"
+  create = var.enable_api_lbaas
 
   role         = "api-int"
   cluster_id   = var.cluster_id

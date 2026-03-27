@@ -1,3 +1,9 @@
+variable "create" {
+  type        = bool
+  default     = true
+  description = "Whether to create the LB defined by the module instance"
+}
+
 variable "cluster_id" {
   type = string
 }
