@@ -73,20 +73,33 @@ module "lb_api" {
 }
 
 resource "cloudscale_floating_ip" "api_v4" {
-  count         = var.enable_api_lbaas ? 1 : 0
+  count         = var.enable_api_lbaas && !var.use_existing_vips ? 1 : 0
   load_balancer = module.lb_api.lb_id
   region_slug   = var.region
   ip_version    = 4
   reverse_ptr   = "api.${local.node_name_suffix}"
 }
 
+data "cloudscale_floating_ip" "api_v4" {
+  count       = var.enable_api_lbaas && var.use_existing_vips ? 1 : 0
+  ip_version  = 4
+  reverse_ptr = "api.${local.node_name_suffix}"
+}
+
 resource "cloudscale_floating_ip" "api_v6" {
-  count         = var.enable_api_lbaas ? 1 : 0
+  count         = var.enable_api_lbaas && !var.use_existing_vips ? 1 : 0
   load_balancer = module.lb_api.lb_id
   region_slug   = var.region
   ip_version    = 6
   reverse_ptr   = "api.${local.node_name_suffix}"
 }
+
+data "cloudscale_floating_ip" "api_v6" {
+  count       = var.enable_api_lbaas && var.use_existing_vips ? 1 : 0
+  ip_version  = 6
+  reverse_ptr = "api.${local.node_name_suffix}"
+}
+
 
 module "lb_api_int" {
   source = "./modules/cloudscale-lb"
