@@ -51,6 +51,32 @@ data "cloudscale_floating_ip" "router_vip" {
   reverse_ptr = "ingress.${local.node_name_suffix}"
 }
 
+resource "cloudscale_floating_ip" "router_vip_v6" {
+  count       = var.enable_router_vip && var.allocate_router_vip_for_lb_controller && var.enable_v6_vips && !var.use_existing_vips ? 1 : 0
+  ip_version  = 6
+  region_slug = var.region
+  reverse_ptr = "ingress.${local.node_name_suffix}"
+
+  tags = {
+    appuio_io_vip_id = "${var.cluster_id}:ingress"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to server for migration
+      server,
+      # Will be handled by the cloudscale-loadbalancer-controller
+      load_balancer,
+    ]
+  }
+}
+
+data "cloudscale_floating_ip" "router_vip_v6" {
+  count       = var.enable_router_vip && var.allocate_router_vip_for_lb_controller && var.enable_v6_vips && var.use_existing_vips ? 1 : 0
+  ip_version  = 6
+  reverse_ptr = "ingress.${local.node_name_suffix}"
+}
+
 module "lb_api" {
   source = "./modules/cloudscale-lb"
   create = var.enable_api_lbaas
