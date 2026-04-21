@@ -87,7 +87,7 @@ data "cloudscale_floating_ip" "api_v4" {
 }
 
 resource "cloudscale_floating_ip" "api_v6" {
-  count         = var.enable_api_lbaas && !var.use_existing_vips ? 1 : 0
+  count         = var.enable_api_lbaas && var.enable_v6_vips && !var.use_existing_vips ? 1 : 0
   load_balancer = module.lb_api.lb_id
   region_slug   = var.region
   ip_version    = 6
@@ -95,7 +95,7 @@ resource "cloudscale_floating_ip" "api_v6" {
 }
 
 data "cloudscale_floating_ip" "api_v6" {
-  count       = var.enable_api_lbaas && var.use_existing_vips ? 1 : 0
+  count       = var.enable_api_lbaas && var.enable_v6_vips && var.use_existing_vips ? 1 : 0
   ip_version  = 6
   reverse_ptr = "api.${local.node_name_suffix}"
 }
