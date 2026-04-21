@@ -206,6 +206,12 @@ variable "enable_nat_vip" {
   default     = true
 }
 
+variable "enable_v6_vips" {
+  type        = bool
+  description = "Whether to allocate a cloudscale IPv6 floating IP for the API"
+  default     = true
+}
+
 variable "internal_vip" {
   type        = string
   description = "Custom internal floating IP for the API. Users must provide an IP that's within the final privnet CIDR."

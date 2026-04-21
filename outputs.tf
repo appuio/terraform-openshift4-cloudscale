@@ -2,7 +2,7 @@ locals {
   cloudscale_router_vip = var.enable_router_vip ? (var.allocate_router_vip_for_lb_controller ? split("/", (var.use_existing_vips ? data.cloudscale_floating_ip.router_vip[0] : cloudscale_floating_ip.router_vip[0]).network)[0] : split("/", module.lb.router_vip[0].network)[0]) : ""
 
   api_vip_v4 = var.enable_api_lbaas ? (var.use_existing_vips ? data.cloudscale_floating_ip.api_v4[0].id : cloudscale_floating_ip.api_v4[0].id) : module.lb.api_vip[0].id
-  api_vip_v6 = var.enable_api_lbaas ? (var.use_existing_vips ? data.cloudscale_floating_ip.api_v6[0].id : cloudscale_floating_ip.api_v6[0].id) : ""
+  api_vip_v6 = var.enable_api_lbaas && var.enable_v6_vips ? (var.use_existing_vips ? data.cloudscale_floating_ip.api_v6[0].id : cloudscale_floating_ip.api_v6[0].id) : ""
 
   router_vip = var.allocate_router_vip_for_lb_controller && !var.enable_router_vip ? var.internal_router_vip : local.cloudscale_router_vip
 }
