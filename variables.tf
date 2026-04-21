@@ -208,7 +208,7 @@ variable "enable_nat_vip" {
 
 variable "enable_v6_vips" {
   type        = bool
-  description = "Whether to allocate a cloudscale IPv6 floating IP for the API"
+  description = "Whether to allocate cloudscale IPv6 floating IPs for the API and ingress router"
   default     = true
 }
 

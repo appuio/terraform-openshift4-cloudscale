@@ -11,6 +11,9 @@ api-int     IN A     ${internal_vip}
 %{ if router_vip != "" ~}
 ingress     IN A     ${router_vip}
 %{ endif ~}
+%{ if router_vip_v6 != "" ~}
+ingress     IN AAAA  ${router_vip_v6}
+%{ endif ~}
 %{ if internal_router_vip != "" ~}
 ingress-int IN A     ${internal_router_vip}
 %{ endif ~}
