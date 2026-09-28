@@ -75,6 +75,14 @@ variable "lbaas_flavor" {
   description = "Flavor to use for cloudscale LBaaS instances"
 }
 
+variable "enable_cloudscale_router" {
+  type        = bool
+  default     = false
+  description = "Whether to deploy a cloudscale router as the internet gateway for the cluster network"
+
+}
+
+
 variable "master_count" {
   type    = number
   default = 3
