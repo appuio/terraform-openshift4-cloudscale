@@ -14,17 +14,17 @@ locals {
 
 output "dns_entries" {
   value = templatefile("${path.module}/templates/dns.zone", {
-    "node_name_suffix"    = local.node_name_suffix,
+    "node_name_suffix"    = local.node_name_suffix
     "api_vip"             = local.api_vip_v4
     "api_vip_v6"          = local.api_vip_v6
     "router_vip"          = local.router_vip_v4
     "router_vip_v6"       = local.router_vip_v6
     "egress_vip"          = local.egress_ip
-    "internal_vip"        = local.internal_vip,
-    "internal_router_vip" = var.internal_router_vip,
-    "masters"             = module.master.ip_addresses,
-    "cluster_id"          = var.cluster_id,
-    "lbs"                 = local.create_puppet_lbs ? module.lb[0].public_ipv4_addresses : [],
+    "internal_vip"        = local.internal_vip
+    "internal_router_vip" = var.internal_router_vip
+    "masters"             = module.master.ip_addresses
+    "cluster_id"          = var.cluster_id
+    "lbs"                 = local.create_puppet_lbs ? module.lb[0].public_ipv4_addresses : []
     "lb_hostnames"        = local.create_puppet_lbs ? module.lb[0].server_names : []
   })
 }
