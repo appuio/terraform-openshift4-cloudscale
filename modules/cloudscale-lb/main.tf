@@ -5,6 +5,7 @@ locals {
     var.internal_vip
   ] : []
 
+  ssh_data_timeout_ms = 15 * 60 * 1000 ## 15 minutes
 }
 resource "cloudscale_load_balancer" "lb" {
   count       = var.create ? 1 : 0
@@ -64,4 +65,40 @@ resource "cloudscale_load_balancer_health_monitor" "lb" {
   type          = var.health_check.type
   http_url_path = var.health_check.path
   http_host     = var.health_check.host
+}
+
+// Expose bootstrap node SSH on port 22 on the LB
+resource "cloudscale_load_balancer_pool" "bootstrap_ssh" {
+  count              = var.create && var.bootstrap_ip != "" ? 1 : 0
+  name               = "${var.cluster_id}-${var.role}_bootstrap_ssh"
+  algorithm          = "source_ip"
+  protocol           = "tcp"
+  load_balancer_uuid = cloudscale_load_balancer.lb[0].id
+}
+
+resource "cloudscale_load_balancer_listener" "bootstrap_ssh" {
+  count         = var.create && var.bootstrap_ip != "" ? 1 : 0
+  name          = "${var.cluster_id}_${var.role}_bootstrap_ssh"
+  pool_uuid     = cloudscale_load_balancer_pool.bootstrap_ssh[0].id
+  protocol      = "tcp"
+  protocol_port = 22
+
+  timeout_client_data_ms = local.ssh_data_timeout_ms
+  timeout_member_data_ms = local.ssh_data_timeout_ms
+}
+
+resource "cloudscale_load_balancer_pool_member" "bootstrap_ssh" {
+  count         = var.create && var.bootstrap_ip != "" ? 1 : 0
+  name          = "${var.cluster_id}_${var.role}-bootstrap_ssh"
+  pool_uuid     = cloudscale_load_balancer_pool.bootstrap_ssh[0].id
+  protocol_port = 22
+  address       = var.bootstrap_ip
+  subnet_uuid   = var.subnet_uuid
+  monitor_port  = 22
+}
+
+resource "cloudscale_load_balancer_health_monitor" "bootstrap_ssh" {
+  count     = var.create && var.bootstrap_ip != "" ? 1 : 0
+  pool_uuid = cloudscale_load_balancer_pool.bootstrap_ssh[0].id
+  type      = "tcp"
 }
