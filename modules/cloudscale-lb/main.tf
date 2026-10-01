@@ -53,7 +53,7 @@ resource "cloudscale_load_balancer_listener" "lb" {
   count         = var.create ? local.port_count : 0
   name          = "${var.cluster_id}_${var.role}_${var.ports[count.index]}"
   pool_uuid     = cloudscale_load_balancer_pool.lb[count.index].id
-  protocol      = "tcp"
+  protocol      = var.protocol
   protocol_port = var.ports[count.index]
   allowed_cidrs = lookup(var.allowed_cidrs, var.ports[count.index], [])
 }
