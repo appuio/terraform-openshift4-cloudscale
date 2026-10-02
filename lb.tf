@@ -27,6 +27,11 @@ module "lb" {
   enable_proxy_protocol    = var.lb_enable_proxy_protocol
 }
 
+moved {
+  from = module.lb
+  to   = module.lb[0]
+}
+
 resource "cloudscale_floating_ip" "router_vip" {
   count       = var.enable_router_vip && var.allocate_router_vip_for_lb_controller && !var.use_existing_vips ? 1 : 0
   ip_version  = 4
