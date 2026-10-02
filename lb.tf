@@ -1,6 +1,8 @@
 module "lb" {
   source = "git::https://github.com/appuio/terraform-modules.git//modules/vshn-lbaas-cloudscale?ref=v7.2.0"
 
+  count = local.create_puppet_lbs ? 1 : 0
+
   node_name_suffix       = local.node_name_suffix
   cluster_id             = var.cluster_id
   region                 = var.region
@@ -23,6 +25,11 @@ module "lb" {
   internal_vip             = var.enable_api_lbaas ? "" : local.internal_vip
   internal_router_vip      = !var.allocate_router_vip_for_lb_controller ? var.internal_router_vip : ""
   enable_proxy_protocol    = var.lb_enable_proxy_protocol
+}
+
+moved {
+  from = module.lb
+  to   = module.lb[0]
 }
 
 resource "cloudscale_floating_ip" "router_vip" {
