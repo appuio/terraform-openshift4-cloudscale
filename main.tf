@@ -52,3 +52,23 @@ resource "cloudscale_interface" "gateway_clusternet" {
     address     = local.gateway_address
   }
 }
+
+// NOTE(sg): Currently, cloudscale private networks and subnets have a 1:1
+// mapping, so we don't need any special logic here. This will likely need
+// refactoring if that constraint changes.
+data "cloudscale_subnet" "additional_lb_network" {
+  count = length(var.additional_lb_networks)
+
+  network_uuid = var.additional_lb_networks[count.index]
+}
+
+resource "cloudscale_interface" "additional_network" {
+  count = var.enable_cloudscale_router ? length(data.cloudscale_subnet.additional_lb_network) : 0
+
+  router_uuid  = cloudscale_router.gateway[0].id
+  network_uuid = var.additional_lb_networks[count.index]
+  addresses {
+    subnet_uuid = data.cloudscale_subnet.additional_lb_network[count.index].id
+    address     = cidrhost(data.cloudscale_subnet.additional_lb_network[count.index].cidr, 1)
+  }
+}
