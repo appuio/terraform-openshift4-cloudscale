@@ -1,29 +1,31 @@
 locals {
-  cloudscale_router_vip = var.enable_router_vip ? (var.allocate_router_vip_for_lb_controller ? split("/", (var.use_existing_vips ? data.cloudscale_floating_ip.router_vip[0] : cloudscale_floating_ip.router_vip[0]).network)[0] : split("/", module.lb.router_vip[0].network)[0]) : ""
+  cloudscale_router_vip = var.enable_router_vip ? (var.allocate_router_vip_for_lb_controller ? split("/", (var.use_existing_vips ? data.cloudscale_floating_ip.router_vip[0] : cloudscale_floating_ip.router_vip[0]).network)[0] : (local.create_puppet_lbs ? split("/", module.lb[0].router_vip[0].network)[0] : "")) : ""
 
   cloudscale_router_vip_v6 = var.enable_router_vip && var.enable_v6_vips ? (var.allocate_router_vip_for_lb_controller ? split("/", (var.use_existing_vips ? data.cloudscale_floating_ip.router_vip_v6[0] : cloudscale_floating_ip.router_vip_v6[0]).network)[0] : "") : ""
 
-  api_vip_v4 = var.enable_api_vip ? (var.enable_api_lbaas ? (var.use_existing_vips ? data.cloudscale_floating_ip.api_v4[0].id : cloudscale_floating_ip.api_v4[0].id) : module.lb.api_vip[0].id) : local.internal_vip
+  api_vip_v4 = var.enable_api_vip ? (var.enable_api_lbaas ? (var.use_existing_vips ? data.cloudscale_floating_ip.api_v4[0].id : cloudscale_floating_ip.api_v4[0].id) : module.lb[0].api_vip[0].id) : local.internal_vip
   api_vip_v6 = var.enable_api_vip && var.enable_api_lbaas && var.enable_v6_vips ? (var.use_existing_vips ? data.cloudscale_floating_ip.api_v6[0].id : cloudscale_floating_ip.api_v6[0].id) : ""
 
   router_vip_v4 = var.allocate_router_vip_for_lb_controller && !var.enable_router_vip ? var.internal_router_vip : local.cloudscale_router_vip
   router_vip_v6 = var.allocate_router_vip_for_lb_controller && var.enable_router_vip ? local.cloudscale_router_vip_v6 : ""
+
+  egress_ip = var.enable_cloudscale_router ? cloudscale_router.gateway[0].internet_gateway_addresses[0].address : (var.enable_nat_vip && var.lb_count != 0 ? split("/", module.lb[0].nat_vip[0].network)[0] : "")
 }
 
 output "dns_entries" {
   value = templatefile("${path.module}/templates/dns.zone", {
-    "node_name_suffix"    = local.node_name_suffix,
+    "node_name_suffix"    = local.node_name_suffix
     "api_vip"             = local.api_vip_v4
     "api_vip_v6"          = local.api_vip_v6
     "router_vip"          = local.router_vip_v4
     "router_vip_v6"       = local.router_vip_v6
-    "egress_vip"          = var.enable_nat_vip && var.lb_count != 0 ? split("/", module.lb.nat_vip[0].network)[0] : ""
-    "internal_vip"        = local.internal_vip,
-    "internal_router_vip" = var.internal_router_vip,
-    "masters"             = module.master.ip_addresses,
-    "cluster_id"          = var.cluster_id,
-    "lbs"                 = module.lb.public_ipv4_addresses,
-    "lb_hostnames"        = module.lb.server_names
+    "egress_vip"          = local.egress_ip
+    "internal_vip"        = local.internal_vip
+    "internal_router_vip" = var.internal_router_vip
+    "masters"             = module.master.ip_addresses
+    "cluster_id"          = var.cluster_id
+    "lbs"                 = local.create_puppet_lbs ? module.lb[0].public_ipv4_addresses : []
+    "lb_hostnames"        = local.create_puppet_lbs ? module.lb[0].server_names : []
   })
 }
 
@@ -72,7 +74,7 @@ output "api_int" {
 }
 
 output "hieradata_mr" {
-  value = module.lb.hieradata_mr_url
+  value = local.create_puppet_lbs ? module.lb[0].hieradata_mr_url[0] : ""
 }
 
 output "master-machines_yml" {
