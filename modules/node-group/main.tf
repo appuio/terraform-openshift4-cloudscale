@@ -31,6 +31,10 @@ resource "cloudscale_server" "node" {
     }
   }
 
+  timeouts {
+    create = "15m"
+  }
+
   tags = var.make_adoptable_by_provider ? {
     "machine-api-provider-cloudscale_appuio_io_name" : random_id.node[count.index].hex,
     "machine-api-provider-cloudscale_appuio_io_cluster_id" : var.cluster_id,
